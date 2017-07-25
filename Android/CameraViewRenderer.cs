@@ -5,19 +5,21 @@ namespace Zebble.Plugin.Renderer
     using Zebble;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class CameraViewRenderer : ICustomRenderer
+    public class CameraViewRenderer : INativeRenderer
     {
-        Plugin.CameraView View;
         AndroidCameraView Result;
 
-        public async Task<Android.Views.View> Render(object view)
+        public Task<Android.Views.View> Render(Renderer renderer)
         {
-            View = (Plugin.CameraView)view;
-            Result = new AndroidCameraView(View);
+            Result = new AndroidCameraView((CameraView)renderer.View);
 
-            return Result;
+            return Task.FromResult<Android.Views.View>(Result);
         }
 
-        public void Dispose() => Result.Dispose();
+        public void Dispose()
+        {
+            Result?.Dispose();
+            Result = null;
+        }
     }
 }

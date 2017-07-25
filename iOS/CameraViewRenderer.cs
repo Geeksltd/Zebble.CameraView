@@ -2,22 +2,24 @@ namespace Zebble.Plugin.Renderer
 {
     using System.ComponentModel;
     using System.Threading.Tasks;
+    using UIKit;
     using Zebble;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class CameraViewRenderer : ICustomRenderer
+    public class CameraViewRenderer : INativeRenderer
     {
-        CameraView View;
         IosCameraView Result;
 
-        public async Task<UIKit.UIView> Render(object view)
+        public Task<UIView> Render(Renderer renderer)
         {
-            View = (CameraView)view;
-            Result = new IosCameraView(View);
-
-            return Result;
+            Result = new IosCameraView((CameraView)renderer.View);
+            return Task.FromResult<UIView>(Result);
         }
 
-        public void Dispose() => Result.Dispose();
+        public void Dispose()
+        {
+            Result?.Dispose();
+            Result = null;
+        }
     }
 }

@@ -11,17 +11,15 @@ namespace Zebble.Plugin.Renderer
     using controls = Windows.UI.Xaml.Controls;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class CameraViewRenderer : ICustomRenderer, IDisposable
+    public class CameraViewRenderer : INativeRenderer
     {
-        CameraView View;
         controls.CaptureElement Result;
         MediaCapture Capture;
         bool IsPreviewing;
         DisplayRequest DisplayRequest;
 
-        public async Task<FrameworkElement> Render(object view)
+        public async Task<FrameworkElement> Render(Renderer _)
         {
-            View = (CameraView)view;
             Result = new controls.CaptureElement { Stretch = Windows.UI.Xaml.Media.Stretch.UniformToFill };
 
             DisplayRequest = new DisplayRequest();
