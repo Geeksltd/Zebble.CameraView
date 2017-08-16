@@ -1,11 +1,8 @@
-namespace Zebble.Plugin.Renderer
+namespace Zebble
 {
-    using System.ComponentModel;
     using System.Threading.Tasks;
-    using Zebble;
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class CameraViewRenderer : INativeRenderer
+    class CameraViewRenderer : INativeRenderer
     {
         AndroidCameraView Result;
 

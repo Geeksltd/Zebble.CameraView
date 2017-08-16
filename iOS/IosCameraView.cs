@@ -1,20 +1,18 @@
-namespace Zebble.Plugin.Renderer
+namespace Zebble
 {
-    using System.ComponentModel;
     using System.Threading.Tasks;
     using AVFoundation;
     using Foundation;
     using UIKit;
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class IosCameraView : UIView
+    class IosCameraView : UIView
     {
-        Plugin.CameraView Camera;
+        CameraView Camera;
         AVCaptureSession CaptureSession;
 
         public IosCameraView(View view)
         {
-            Camera = (Plugin.CameraView)view;
+            Camera = (CameraView)view;
             Camera.WhenShown(() => Device.UIThread.Run(SetupLiveCameraStream));
         }
 

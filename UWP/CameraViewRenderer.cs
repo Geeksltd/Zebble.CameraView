@@ -1,17 +1,14 @@
-namespace Zebble.Plugin.Renderer
+namespace Zebble
 {
     using System;
-    using System.ComponentModel;
     using System.Threading.Tasks;
     using Windows.Graphics.Display;
     using Windows.Media.Capture;
     using Windows.System.Display;
     using Windows.UI.Xaml;
-    using Zebble;
     using controls = Windows.UI.Xaml.Controls;
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class CameraViewRenderer : INativeRenderer
+    class CameraViewRenderer : INativeRenderer
     {
         controls.CaptureElement Result;
         MediaCapture Capture;

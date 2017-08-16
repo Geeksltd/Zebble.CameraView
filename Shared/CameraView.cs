@@ -1,8 +1,6 @@
-﻿namespace Zebble.Plugin
+﻿namespace Zebble
 {
-    using Zebble;
-
-    public class CameraView : View, IRenderedBy<Renderer.CameraViewRenderer>
+    public class CameraView : View, IRenderedBy<CameraViewRenderer>
     {
         public CameraView() => this.Size(100.Percent());
     }

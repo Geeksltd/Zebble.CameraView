@@ -1,12 +1,9 @@
-namespace Zebble.Plugin.Renderer
+namespace Zebble
 {
-    using System.ComponentModel;
     using System.Threading.Tasks;
     using UIKit;
-    using Zebble;
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class CameraViewRenderer : INativeRenderer
+    class CameraViewRenderer : INativeRenderer
     {
         IosCameraView Result;
 

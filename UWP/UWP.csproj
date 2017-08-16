@@ -9,7 +9,7 @@
     <ProjectGuid>{AEFF27A1-7FF0-4803-8AFC-BDEE2A526F17}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zebble.Plugin.Renderer</RootNamespace>
+    <RootNamespace>Zebble.Renderer</RootNamespace>
     <AssemblyName>Zebble.CameraView.UWP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>

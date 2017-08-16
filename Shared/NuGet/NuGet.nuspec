@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Zebble.CameraView</id>
-    <version>4.1.229</version>
+    <version>4.1.230</version>
     <title>Camera View for Zebble (Xamarin)</title>
     <description>Displays a live feed from the camera.</description>
     <iconUrl>https://raw.githubusercontent.com/Geeksltd/Zebble.CameraView/master/Shared/Icon.png</iconUrl>

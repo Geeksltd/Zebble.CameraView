@@ -1,12 +1,10 @@
-namespace Zebble.Plugin.Renderer
+namespace Zebble
 {
-    using System.ComponentModel;
     using Android.Hardware;
     using Android.Views;
     using Android.Widget;
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class AndroidCameraView : FrameLayout, ISurfaceHolderCallback
+    class AndroidCameraView : FrameLayout, ISurfaceHolderCallback
     {
         CameraView View;
         Camera PreviewCamera;
