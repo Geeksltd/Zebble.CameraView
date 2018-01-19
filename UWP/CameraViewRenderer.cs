@@ -58,7 +58,7 @@ namespace Zebble
                     await Capture.StopPreviewAsync();
                 }
 
-                Device.UIThread.RunAction(() =>
+                Thread.UI.RunAction(() =>
                 {
                     Result.Source = null;
                     DisplayRequest?.RequestRelease();

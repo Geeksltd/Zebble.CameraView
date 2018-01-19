@@ -13,7 +13,7 @@ namespace Zebble
         public IosCameraView(View view)
         {
             Camera = (CameraView)view;
-            Camera.WhenShown(() => Device.UIThread.Run(SetupLiveCameraStream));
+            Camera.WhenShown(() => Thread.UI.Run(SetupLiveCameraStream));
         }
 
         public async Task SetupLiveCameraStream()
