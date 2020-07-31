@@ -9,6 +9,7 @@
     <Import_RootNamespace>Zebble.Plugin</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CameraPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CameraView.cs" />
     <None Include="$(MSBuildThisFileDirectory)Icon.png" />
     <None Include="$(MSBuildThisFileDirectory)NuGet\CreatePackage.bat" />

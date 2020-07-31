@@ -4,9 +4,11 @@ namespace Zebble
 {
     public class CameraView : View, IRenderedBy<CameraViewRenderer>
     {
-        public bool DisablePreview { get; set; } 
+        public bool DisablePreview { get; set; }
+        public CameraPosition CameraPosition { get; set; } = CameraPosition.Back;
 
-        public CameraView() => this.Size(100.Percent());
+        public CameraView()=> 
+            this.Size(100.Percent());
                 
         internal event Action<TaskCompletionSource<byte[] >> RequestFrameCapture;
 

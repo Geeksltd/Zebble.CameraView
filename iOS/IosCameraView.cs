@@ -25,32 +25,36 @@ namespace Zebble
             LastFrameCaptured = DateTime.Now;
         }
 
-        bool ignoreFirstFrame = true;
         public override void DidOutputSampleBuffer(AVCaptureOutput captureOutput, CMSampleBuffer sampleBuffer, AVCaptureConnection connection)
         {
             if (connection.SupportsVideoOrientation)
-            {      
-                // TODO: check if we need this?
-                connection.VideoOrientation = 
-                    Device.Screen.Orientation == DeviceOrientation.Portrait ? 
-                    AVCaptureVideoOrientation.Portrait : AVCaptureVideoOrientation.LandscapeLeft;
-            }
+                connection.VideoOrientation = GetVideoOrientation();
 
             if (DateTime.Now < LastFrameCaptured.AddSeconds(0.1)) return; // capture 10 frames per second
             LastFrameCaptured = DateTime.Now;
 
-            // TODO: check if we need this?
-            if (ignoreFirstFrame)
-            {
-                ignoreFirstFrame = false;
-                return; 
-            }
+            Device.Log.Message("############ ACTION: capturing picture");
 
             CurrentImageBuffer = GetBytes(sampleBuffer.GetImageBuffer() as CVPixelBuffer);
             sampleBuffer.Dispose();            
         }
 
-        async void Camera_RequestFrameCapture(TaskCompletionSource<byte[]> source)
+        AVCaptureVideoOrientation GetVideoOrientation()
+        {
+            switch (UIApplication.SharedApplication.StatusBarOrientation)
+            {   
+                case UIInterfaceOrientation.PortraitUpsideDown:
+                    return AVCaptureVideoOrientation.PortraitUpsideDown;
+                case UIInterfaceOrientation.LandscapeLeft:
+                    return AVCaptureVideoOrientation.LandscapeLeft;
+                case UIInterfaceOrientation.LandscapeRight:
+                    return AVCaptureVideoOrientation.LandscapeRight;
+                default:
+                    return AVCaptureVideoOrientation.Portrait;
+            }
+        }
+
+        void Camera_RequestFrameCapture(TaskCompletionSource<byte[]> source)
         {
             var buffer = CurrentImageBuffer ?? new byte[0];            
             source.TrySetResult(buffer);            
@@ -105,7 +109,7 @@ namespace Zebble
             
             CaptureSession = new AVCaptureSession();
             CaptureSession.BeginConfiguration();
-            CaptureSession.SessionPreset = AVCaptureSession.PresetMedium;
+            CaptureSession.SessionPreset = AVCaptureSession.Preset640x480;
             CaptureSession.AddInput(AVCaptureDeviceInput.FromDevice(captureDevice));
             CaptureSession.AddOutput(CreateVideoDataOutput());
             CaptureSession.CommitConfiguration();
@@ -144,8 +148,9 @@ namespace Zebble
 
         AVCaptureDevice CreateCaptureDevice()
         {
-            var device = AVCaptureDevice.DefaultDeviceWithMediaType(AVMediaType.Video);
-
+            var device = 
+                AVCaptureDevice.GetDefaultDevice(AVCaptureDeviceType.BuiltInWideAngleCamera,AVMediaTypes.Video, GetCameraPosition());
+            
             if (device != null)
             {
                 var error = new NSError();
@@ -166,16 +171,30 @@ namespace Zebble
                     device.LockForConfiguration(out error);
                     device.WhiteBalanceMode = AVCaptureWhiteBalanceMode.ContinuousAutoWhiteBalance;
                     device.UnlockForConfiguration();
-                }
+                }               
+                
             }
-
+            
             return device;
+        }
+
+        private AVCaptureDevicePosition GetCameraPosition()
+        {
+            switch (Camera.CameraPosition)
+            {
+                case CameraPosition.Back:
+                    return AVCaptureDevicePosition.Back;
+                default:
+                    return AVCaptureDevicePosition.Front;
+            }
+             
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                Device.Log.Message("############ ACTION: Stopping the camera");
                 CaptureSession?.StopRunning();
                 Camera = null;
             }
