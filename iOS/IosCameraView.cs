@@ -30,19 +30,19 @@ namespace Zebble
             if (connection.SupportsVideoOrientation)
                 connection.VideoOrientation = GetVideoOrientation();
 
-            if (DateTime.Now < LastFrameCaptured.AddSeconds(0.1)) return; // capture 10 frames per second
-            LastFrameCaptured = DateTime.Now;
+            //if (DateTime.Now < LastFrameCaptured.AddSeconds(0.1)) return; // capture 10 frames per second
+            //LastFrameCaptured = DateTime.Now;
 
             Device.Log.Message("############ ACTION: capturing picture");
 
             CurrentImageBuffer = GetBytes(sampleBuffer.GetImageBuffer() as CVPixelBuffer);
-            sampleBuffer.Dispose();            
+            sampleBuffer.Dispose();
         }
 
         AVCaptureVideoOrientation GetVideoOrientation()
         {
             switch (UIApplication.SharedApplication.StatusBarOrientation)
-            {   
+            {
                 case UIInterfaceOrientation.PortraitUpsideDown:
                     return AVCaptureVideoOrientation.PortraitUpsideDown;
                 case UIInterfaceOrientation.LandscapeLeft:
@@ -56,8 +56,8 @@ namespace Zebble
 
         void Camera_RequestFrameCapture(TaskCompletionSource<byte[]> source)
         {
-            var buffer = CurrentImageBuffer ?? new byte[0];            
-            source.TrySetResult(buffer);            
+            var buffer = CurrentImageBuffer ?? new byte[0];
+            source.TrySetResult(buffer);
         }
         byte[] GetBytes(CVPixelBuffer pixelBuffer)
         {
@@ -69,7 +69,7 @@ namespace Zebble
             var height = pixelBuffer.Height;
             var log = baseAddress + " " + bytesPerRow + " " + width + " " + height;
             Zebble.Device.Log.Message(log);
-            
+
             var flags = CGBitmapFlags.PremultipliedFirst | CGBitmapFlags.ByteOrder32Little;
             // Create a CGImage on the RGB colorspace from the configured parameter above
             using (var cs = CGColorSpace.CreateDeviceRGB())
@@ -78,9 +78,9 @@ namespace Zebble
             {
                 pixelBuffer.Unlock(CVPixelBufferLock.None);
                 var capturedImage = UIImage.FromImage(cgImage);
-                 return capturedImage.AsPNG().ToArray();
+                return capturedImage.AsPNG().ToArray();
             }
-            
+
         }
     }
 
@@ -106,10 +106,10 @@ namespace Zebble
 
             var captureDevice = CreateCaptureDevice();
             if (captureDevice == null) return;
-            
+
             CaptureSession = new AVCaptureSession();
             CaptureSession.BeginConfiguration();
-            CaptureSession.SessionPreset = AVCaptureSession.Preset640x480;
+            CaptureSession.SessionPreset = AVCaptureSession.PresetMedium;
             CaptureSession.AddInput(AVCaptureDeviceInput.FromDevice(captureDevice));
             CaptureSession.AddOutput(CreateVideoDataOutput());
             CaptureSession.CommitConfiguration();
@@ -125,14 +125,14 @@ namespace Zebble
 
         private AVCaptureOutput CreateVideoDataOutput()
         {
-            var result = new AVCaptureVideoDataOutput 
-            { 
-                AlwaysDiscardsLateVideoFrames = true ,
+            var result = new AVCaptureVideoDataOutput
+            {
+                AlwaysDiscardsLateVideoFrames = true,
                 WeakVideoSettings = new CVPixelBufferAttributes { PixelFormatType = CVPixelFormatType.CV32BGRA }.Dictionary
             };
-            
+
             result.SetSampleBufferDelegateQueue(Receiver, DispatchQueue.MainQueue);
-            
+
             return result;
         }
 
@@ -148,9 +148,9 @@ namespace Zebble
 
         AVCaptureDevice CreateCaptureDevice()
         {
-            var device = 
-                AVCaptureDevice.GetDefaultDevice(AVCaptureDeviceType.BuiltInWideAngleCamera,AVMediaTypes.Video, GetCameraPosition());
-            
+            var device =
+                AVCaptureDevice.GetDefaultDevice(AVCaptureDeviceType.BuiltInWideAngleCamera, AVMediaTypes.Video, GetCameraPosition());
+
             if (device != null)
             {
                 var error = new NSError();
@@ -171,11 +171,42 @@ namespace Zebble
                     device.LockForConfiguration(out error);
                     device.WhiteBalanceMode = AVCaptureWhiteBalanceMode.ContinuousAutoWhiteBalance;
                     device.UnlockForConfiguration();
-                }               
-                
+                }
+
+
+                if (device.LockForConfiguration(out error))
+                {
+                    const int FRAMES_PER_SECOND = 10;
+                    device.ActiveFormat = FindFormatFor(device, FRAMES_PER_SECOND);
+                    var tenFramesPerSecond = new CMTime(1, FRAMES_PER_SECOND);
+                    device.ActiveVideoMaxFrameDuration = tenFramesPerSecond;
+                    device.ActiveVideoMinFrameDuration = tenFramesPerSecond;
+                    device.UnlockForConfiguration();
+                }
+
+
             }
-            
+
             return device;
+        }
+
+        AVCaptureDeviceFormat FindFormatFor(AVCaptureDevice device, int framesPerSecond)
+        {
+            foreach (var format in device.Formats)
+            {
+                foreach (var range in format.VideoSupportedFrameRateRanges)
+                {
+                    Device.Log.Message("________________________" + range.MinFrameRate);
+                }
+            }
+
+            var desiredFormats = device.Formats.Where(f => f.VideoSupportedFrameRateRanges.Any(r => r.MinFrameRate < framesPerSecond && r.MaxFrameRate > framesPerSecond));
+
+            var mostEfficient = desiredFormats.WithMin(x => x.VideoSupportedFrameRateRanges.Min(d => d.MinFrameRate));
+
+            if (mostEfficient == null) throw new Exception($"Could not find a video format for {framesPerSecond}/seconds. Supported : " + device.Formats.Select(c => c.VideoSupportedFrameRateRanges.Min(x => x.MinFrameRate)).ToString(","));
+
+            return mostEfficient;
         }
 
         private AVCaptureDevicePosition GetCameraPosition()
@@ -187,7 +218,7 @@ namespace Zebble
                 default:
                     return AVCaptureDevicePosition.Front;
             }
-             
+
         }
 
         protected override void Dispose(bool disposing)
