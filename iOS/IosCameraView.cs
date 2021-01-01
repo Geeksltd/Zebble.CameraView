@@ -2,7 +2,6 @@ namespace Zebble
 {
     using System;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using AVFoundation;
     using CoreFoundation;
@@ -11,6 +10,7 @@ namespace Zebble
     using CoreVideo;
     using Foundation;
     using UIKit;
+    using Olive;
 
     public class LocalAVCaptureStillImageOutput : AVFoundation.AVCaptureVideoDataOutputSampleBufferDelegate
     {
