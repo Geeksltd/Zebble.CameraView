@@ -3,6 +3,7 @@ namespace Zebble
     using Android.Hardware;
     using Android.Views;
     using Android.Widget;
+    using Olive;
 
     class AndroidCameraView : FrameLayout, ISurfaceHolderCallback
     {
@@ -50,7 +51,7 @@ namespace Zebble
             try { PreviewCamera?.SetPreviewDisplay(holder); }
             catch (Java.IO.IOException exception)
             {
-                Device.Log.Error("IOException caused by setPreviewDisplay(): " + exception.Message);
+                Log.For(this).Error(exception, "IOException caused by setPreviewDisplay().");
             }
         }
 

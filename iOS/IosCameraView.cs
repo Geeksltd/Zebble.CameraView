@@ -33,7 +33,7 @@ namespace Zebble
             //if (DateTime.Now < LastFrameCaptured.AddSeconds(0.1)) return; // capture 10 frames per second
             //LastFrameCaptured = DateTime.Now;
 
-            Device.Log.Message("############ ACTION: capturing picture");
+            Log.For(this).Debug("############ ACTION: capturing picture");
 
             CurrentImageBuffer = GetBytes(sampleBuffer.GetImageBuffer() as CVPixelBuffer);
             sampleBuffer.Dispose();
@@ -67,8 +67,8 @@ namespace Zebble
             var bytesPerRow = pixelBuffer.BytesPerRow;
             var width = pixelBuffer.Width;
             var height = pixelBuffer.Height;
-            var log = baseAddress + " " + bytesPerRow + " " + width + " " + height;
-            Zebble.Device.Log.Message(log);
+
+            Log.For(this).Debug(baseAddress + " " + bytesPerRow + " " + width + " " + height);
 
             var flags = CGBitmapFlags.PremultipliedFirst | CGBitmapFlags.ByteOrder32Little;
             // Create a CGImage on the RGB colorspace from the configured parameter above
@@ -196,7 +196,7 @@ namespace Zebble
             {
                 foreach (var range in format.VideoSupportedFrameRateRanges)
                 {
-                    Device.Log.Message("________________________" + range.MinFrameRate);
+                    Log.For(this).Debug("________________________" + range.MinFrameRate);
                 }
             }
 
@@ -225,7 +225,7 @@ namespace Zebble
         {
             if (disposing)
             {
-                Device.Log.Message("############ ACTION: Stopping the camera");
+                Log.For(this).Debug("############ ACTION: Stopping the camera");
                 CaptureSession?.StopRunning();
                 Camera = null;
             }
