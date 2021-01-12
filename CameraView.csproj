@@ -7,7 +7,7 @@
     <RootNamespace>Zebble</RootNamespace>
     <PackageId>Zebble.CameraView</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>4.1.241.0</Version>
+    <Version>4.1.242.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
