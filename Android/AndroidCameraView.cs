@@ -41,7 +41,6 @@ namespace Zebble
             PreviewCamera.StopPreview();
             if (PreviewCamera == null) return;
 
-            PreviewCamera = null;
             PreviewCamera.Release();
             PreviewCamera = null;
         }
